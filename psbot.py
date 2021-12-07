@@ -15,6 +15,7 @@ logging.raiseExceptions = False
 async def check_running(pid):
     process = Popen(['ps', '-p', pid], stdout=PIPE, stderr=PIPE)
     stdout, _ = process.communicate()
+    logging.info(stdout)
     return len(stdout.splitlines()) > 1
 
 
@@ -25,7 +26,7 @@ async def run_continuously():
 
     running = await check_running(pid)
     if not running:
-        logging.info("The process is not running. Exiting.")
+        logging.info("The process is not running")
         sys.exit(0)
 
     # Scheduled checks
@@ -48,7 +49,7 @@ async def run_continuously():
             asyncio.sleep(0.5)
         )
     
-    logging.info("Taking actions for stopped running.")
+    logging.info("Taking actions for stopped running")
     await actions.gnome.stopped_alert(pid, name)
 
 if __name__ == "__main__":
