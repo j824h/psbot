@@ -12,7 +12,7 @@ logging.raiseExceptions = False
 
 
 # https://stackoverflow.com/a/1091428
-async def check_running(pid):
+async def check_found(pid):
     process = Popen(['ps', '-p', pid], stdout=PIPE, stderr=PIPE)
     stdout, _ = process.communicate()
     logging.info(stdout)
@@ -24,15 +24,15 @@ async def run_continuously():
     pid = sys.argv[1]
     name = sys.argv[2]
 
-    running = await check_running(pid)
-    if not running:
-        logging.info("The process is not running")
+    found = await check_found(pid)
+    if not found:
+        logging.info("The process is not found")
         sys.exit(0)
 
     # Scheduled checks
     async def check_and_update():
-        global running
-        running = await check_running(pid)
+        global found
+        found = await check_found(pid)
 
     task = asyncio.create_task(check_and_update())
 
@@ -42,15 +42,15 @@ async def run_continuously():
 
     schedule.every().minutes.do(create_task).tag("default")
 
-    while running:
+    while found:
         schedule.run_pending()
-        running = await asyncio.gather(
+        found = await asyncio.gather(
             task,
             asyncio.sleep(0.5)
         )
     
-    logging.info("Taking actions for stopped running")
-    await actions.gnome.stopped_alert(pid, name)
+    logging.info("Taking actions for the terminated process")
+    await actions.gnome.alert_terminated(pid, name)
 
 if __name__ == "__main__":
     asyncio.run(run_continuously())
