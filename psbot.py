@@ -31,7 +31,7 @@ async def run_continuously():
     # Scheduled checks
     async def check_and_update():
         global running
-        running = await check_running()
+        running = await check_running(pid)
 
     task = asyncio.create_task(check_and_update())
 
