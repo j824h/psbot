@@ -44,7 +44,7 @@ async def run_continuously():
 
     while found:
         schedule.run_pending()
-        found = await asyncio.gather(
+        await asyncio.gather(
             task,
             asyncio.sleep(0.5)
         )
