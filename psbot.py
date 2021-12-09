@@ -21,8 +21,13 @@ async def check_found(pid):
 
 async def run_continuously():
     # Initial check
-    pid = sys.argv[1]
-    name = sys.argv[2]
+    if len(sys.argv) == 1:
+        print("Input the pid", sys.stderr)
+        sys.exit(1)
+    pid = int(sys.argv[1])
+    name = ""
+    if len(sys.argv) == 3:
+        name = sys.argv[2]
 
     found = await check_found(pid)
     if not found:
