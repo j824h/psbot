@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE
+import psutil
 import argparse
 
 import asyncio
@@ -11,24 +11,18 @@ logging.basicConfig(level=logging.INFO)
 logging.raiseExceptions = False
 
 
-# https://stackoverflow.com/a/1091428
 async def check_found(pid):
-    process = Popen(['ps', '-p', pid], stdout=PIPE, stderr=PIPE)
-    stdout, _ = process.communicate()
-    logging.info(stdout)
-    return len(stdout.splitlines()) > 1
-
-
-async def run_continuously():
-    # Initial check
-    pid = sys.argv[1]
-    name = sys.argv[2]
+    try:
+        psutil.Process(pid)
+        return True
+    except psutil.NoSuchProcess:
+        return False
+    
 
 async def psbot(pid, name):
     found = await check_found(pid)
     if not found:
-        logging.info("The process is not found")
-        sys.exit(0)
+        raise SystemExit("The process is not found")
 
     # Scheduled checks
     async def check_and_update():
