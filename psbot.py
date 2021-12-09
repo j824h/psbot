@@ -1,5 +1,5 @@
-import sys
 from subprocess import Popen, PIPE
+import argparse
 
 import asyncio
 import schedule
@@ -24,6 +24,7 @@ async def run_continuously():
     pid = sys.argv[1]
     name = sys.argv[2]
 
+async def psbot(pid, name):
     found = await check_found(pid)
     if not found:
         logging.info("The process is not found")
@@ -52,4 +53,9 @@ async def run_continuously():
     await actions.gnome.alert_terminated(pid, name)
 
 if __name__ == "__main__":
-    asyncio.run(run_continuously())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('pid', type=int)
+    parser.add_argument('--name', default="", help='nickname for the process')
+    args = parser.parse_args()
+
+    asyncio.run(psbot(args.pid, args.name))
