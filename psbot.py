@@ -31,7 +31,7 @@ async def run_continuously():
 
     # Scheduled checks
     async def check_and_update():
-        global found
+        nonlocal found
         found = await check_found(pid)
 
     task = asyncio.create_task(check_and_update())
