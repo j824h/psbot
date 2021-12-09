@@ -34,12 +34,11 @@ async def run_continuously():
         nonlocal found
         found = await check_found(pid)
 
-    task = asyncio.create_task(check_and_update())
-
     def create_task():
         global task
         task = asyncio.create_task(check_and_update())
 
+    task = asyncio.create_task(asyncio.sleep(0))
     schedule.every().minutes.do(create_task).tag("default")
 
     while found:
